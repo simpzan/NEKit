@@ -30,6 +30,7 @@ public class NWUDPSocket {
     /// Since UDP do not have a "close" semantic, this can be an indicator of timeout.
     public var lastActive: NSDate = NSDate()
 
+    var count = 0;
     /**
      Create a new UDP socket connecting to remote.
 
@@ -51,9 +52,13 @@ public class NWUDPSocket {
             sSelf.updateActivityTimer()
 
             guard error == nil else {
+                sSelf.count += 1
                 DDLogError("Error when reading from remote server. \(error)")
+                if sSelf.count == 100 { assert(false) }
+
                 return
             }
+            sSelf.count = 0
 
             for data in dataArray {
                 sSelf.delegate?.didReceiveData(data, from: sSelf)
